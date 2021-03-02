@@ -8,6 +8,7 @@ package com.nucleus.cacheexample.orm;
 import com.nucleus.cacheexample.db.DBService;
 import com.nucleus.cacheexample.entity.service.BeanFactory;
 import com.nucleus.cacheexample.cache.serivce.CacheService;
+import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.utils.Logger;
 
 /**
@@ -24,7 +25,12 @@ public class DAOService {
 		dBService = beanFactory.getDBService();
 		this.enableCache = enableCache;
 		if(enableCache){
-			cacheService = new CacheService(resultClass, 10, 10, dBService, 0.5);
+			CacheConfigVO cacheConfigVO = new CacheConfigVO();
+			cacheConfigVO.setCapacity(10);
+			cacheConfigVO.setRecordExpiryInseconds(10);
+			cacheConfigVO.setDataFetcher(dBService);
+			cacheConfigVO.setLoadRatio(0.5);
+			cacheService = new CacheService(resultClass, cacheConfigVO);
 		}
 	}
 

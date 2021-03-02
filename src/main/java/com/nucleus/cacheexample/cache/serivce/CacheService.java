@@ -5,6 +5,7 @@
  */
 package com.nucleus.cacheexample.cache.serivce;
 
+import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.cache.vo.CacheMetadata;
 import com.nucleus.cacheexample.cache.vo.DataStructureWrapper;
 import com.nucleus.cacheexample.db.DataFetcher;
@@ -38,11 +39,11 @@ public class CacheService<T> {
 		}
 	};
 	
-	public CacheService(Class<T> resultClass, int capacity, int recordExpiryInseconds, DataFetcher dataFetcher, double loadRatio){
-		this.capacity = capacity;
-		this.recordExpiryInseconds = recordExpiryInseconds;
-		this.dataFetcher = dataFetcher;
-		this.loadRatio = loadRatio;	//always less than 1
+	public CacheService(Class<T> resultClass, CacheConfigVO cacheConfigVO){
+		this.capacity = cacheConfigVO.getCapacity();
+		this.recordExpiryInseconds = cacheConfigVO.getRecordExpiryInseconds();
+		this.dataFetcher = cacheConfigVO.getDataFetcher();
+		this.loadRatio = cacheConfigVO.getLoadRatio();	//always less than 1
 		this.cacheWrapper = new DataStructureWrapper<>(this.comparator);
 	}
 	
