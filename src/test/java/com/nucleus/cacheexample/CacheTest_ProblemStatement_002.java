@@ -34,11 +34,11 @@ public class CacheTest_ProblemStatement_002 {
 	public void init() {
 		DataFetcher<UserData> dataFetcher = (String identifier) -> {
 			//for delay effect for miss
-			try {
-				Thread.currentThread().sleep(1000);
-			} catch (InterruptedException ex) {
-				Logger.println("interrupted Exception occurred.");
-			}
+//			try {
+//				Thread.currentThread().sleep(1000);
+//			} catch (InterruptedException ex) {
+//				Logger.println("interrupted Exception occurred.");
+//			}
 			int i = Integer.parseInt(identifier);
 			UserData userData = new UserData(i, "RANDOM_STRING_"+i);
 			if(!instanceCounter.containsKey(i)) {
@@ -53,7 +53,7 @@ public class CacheTest_ProblemStatement_002 {
 		cacheConfigVO.setRecordExpiryInseconds(5);
 		cacheConfigVO.setDataFetcher(dataFetcher);		//value callback
 		cacheConfigVO.setEvictionRatio(0.3);
-		cacheConfigVO.setMemoryThresholdSize(3);
+		cacheConfigVO.setMemoryThresholdSize(0);
 		cacheConfigVO.setRecordEvictionListener(new RecordEvictionListener() {
 			@Override
 			public void evictFromCache(Object cacheMetadata) {

@@ -63,7 +63,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 				}
 			};
 		}
-		this.cacheWrapper = new DataStructureWrapper<>(this.comparator, this.recordEvictionListener);
+		this.cacheWrapper = new DataStructureWrapper<>(CacheMetadata.class, this.comparator, this.recordEvictionListener, this.memoryThresholdSize);
 	}
 	
 	@Override

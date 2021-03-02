@@ -56,5 +56,8 @@ public class CacheMetadata<T extends Serializable> {
 		return true;
 	}
 	
+	public String getIdentifier(){
+		return this.id;
+	}
 	
 }
