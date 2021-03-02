@@ -40,7 +40,7 @@ public class DataStructureWrapper<T> {
 		if(hashMap.get(""+obj.hashCode()) == null){
 			int size = list.size();
 			list.add(obj);
-			hashMap.put(""+obj.hashCode(), ""+size);
+			hashMap.put(""+obj.hashCode(), STORAGE.MEMORY+"~"+size);
 		}
 	}
 	
@@ -48,15 +48,18 @@ public class DataStructureWrapper<T> {
 		Logger.println("Deleting object: "+obj.hashCode());
 		String indexMetadata = hashMap.get(""+obj.hashCode());
 		if(indexMetadata != null){
-			int index = Integer.parseInt(indexMetadata);
-			int size = list.size();
-			if(size>1){
-				T lastItem = list.get(size-1);
-				Collections.swap(list, index, size-1);
-				hashMap.put(""+lastItem.hashCode(), ""+index);
+			String arr[] = indexMetadata.split("~");
+			if(arr[0].equals(STORAGE.MEMORY)){
+				int index = Integer.parseInt(arr[1]);
+				int size = list.size();
+				if(size>1){
+					T lastItem = list.get(size-1);
+					Collections.swap(list, index, size-1);
+					hashMap.put(""+lastItem.hashCode(), STORAGE.MEMORY+"~"+index);
+				}
+				list.remove(size-1);
+				hashMap.remove(""+obj.hashCode());
 			}
-			list.remove(size-1);
-			hashMap.remove(""+obj.hashCode());
 			//call listener
 			if(callListener){
 				this.recordEvictionListener.evictFromCache(obj);
@@ -68,7 +71,8 @@ public class DataStructureWrapper<T> {
 		Logger.println("Searching for id: "+id);
 		String indexMetadata = hashMap.get(id);
 		if(indexMetadata!=null){
-			int index = Integer.parseInt(indexMetadata);
+			String arr[] = indexMetadata.split("~");
+			int index = Integer.parseInt(arr[1]);
 			Logger.println("Found id: "+id+" at index: "+index+", list size: "+list.size()+" map size: "+hashMap.size()+" within limit: "+(index<list.size()));
 			return list.get(index);
 		} else {
@@ -90,7 +94,7 @@ public class DataStructureWrapper<T> {
 		hashMap=new HashMap<>();
 		for(int i=0;i<list.size();i++){
 			T temp=list.get(i);
-			hashMap.put(""+temp.hashCode(), ""+i);
+			hashMap.put(""+temp.hashCode(), STORAGE.MEMORY+"~"+i);
 		}
 		Logger.println("FINAL:");
 		printWrapperMetadata();
@@ -126,7 +130,8 @@ public class DataStructureWrapper<T> {
 		Logger.println("Mix Up:");
 		for(Map.Entry<String, String> e:hashMap.entrySet()){
 			String indexMetadata = e.getValue();
-			int index = Integer.parseInt(indexMetadata);
+			String[] arr = indexMetadata.split("~");
+			int index = Integer.parseInt(arr[1]);
 			Logger.println("HM_ "+e.getKey()+" -> P_"+e.getValue()+" -> L_"+list.get(index).hashCode());
 		}
 		Logger.println("_________________________________________________");
@@ -138,6 +143,11 @@ public class DataStructureWrapper<T> {
 		} else {
 			Logger.println("Cache Size: L_"+list.size()+" HM_"+hashMap.size()+" L_NE_HM");
 		}
+	}
+	
+	private static class STORAGE{
+		public static final String MEMORY = "MEMORY";
+		public static final String FILE = "FILE";
 	}
 	
 }
