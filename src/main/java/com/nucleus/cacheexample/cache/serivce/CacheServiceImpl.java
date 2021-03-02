@@ -36,6 +36,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	private double avg_HE_RRT = 0;
 	private int cache_Miss_Count = 0;
 	private double avg_M_RRT = 0;
+	private double avg_LOT = 0;
 	private final Comparator<CacheMetadata<T>> comparator = (CacheMetadata<T> m1, CacheMetadata<T> m2) -> {
 //		int comparision = m1.getCount().compareTo(m2.getCount());
 		int comparision = m1.getDate().compareTo(m2.getDate());
@@ -69,6 +70,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	@Override
 	public T get(String key){
 		this.cacheAccessCount++;
+		Date initLOT = new Date();
 		CacheMetadata<T> obj = cacheWrapper.searchAndFetch(key);
 		//check if object is in cache
 		if(obj==null){
@@ -81,6 +83,10 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 			this.avg_M_RRT = (this.avg_M_RRT*this.cache_Miss_Count) + duration;
 			this.cache_Miss_Count++;
 			this.avg_M_RRT = this.avg_M_RRT/(double)this.cache_Miss_Count;
+			Date finalLOT = new Date();
+			long diff = (finalLOT.getTime()-initLOT.getTime());
+			this.avg_LOT = (this.avg_LOT*(this.cacheAccessCount-1))+diff;
+			this.avg_LOT = this.avg_LOT/(double)this.cacheAccessCount;
 			return object;
 		} else {
 			//exists in cache
@@ -98,6 +104,10 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 				this.avg_HE_RRT = (this.avg_HE_RRT*this.cache_Hit_Expiry_Count) + duration;
 				this.cache_Hit_Expiry_Count++;
 				this.avg_HE_RRT = this.avg_HE_RRT/(double)this.cache_Miss_Count;
+				Date finalLOT = new Date();
+				long diff = (finalLOT.getTime()-initLOT.getTime());
+				this.avg_LOT = (this.avg_LOT*(this.cacheAccessCount-1))+diff;
+				this.avg_LOT = this.avg_LOT/(double)this.cacheAccessCount;
 				return object;
 			} else {
 				//within expiry
@@ -109,6 +119,10 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 				cacheWrapper.add(obj);
 				cacheWrapper.printSize();
 				this.cache_Hit_Count++;
+				Date finalLOT = new Date();
+				long diff = (finalLOT.getTime()-initLOT.getTime());
+				this.avg_LOT = (this.avg_LOT*(this.cacheAccessCount-1))+diff;
+				this.avg_LOT = this.avg_LOT/(double)this.cacheAccessCount;
 				return obj.getObject();
 			}
 		}
@@ -145,14 +159,14 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 		CacheStatistics cacheStatistics = new CacheStatistics();
 		cacheStatistics.setCacheCapacity(this.capacity);
 		cacheStatistics.setCacheSize(cacheWrapper.getSize());
-		cacheStatistics.setMemorySize(cacheWrapper.getSize());
-		cacheStatistics.setDiskSize(0);
+		cacheStatistics.setMemorySize(cacheWrapper.getMemorySize());
+		cacheStatistics.setDiskSize(cacheWrapper.getDiskSize());
 		cacheStatistics.setAccessCount(this.cacheAccessCount);
 		cacheStatistics.setHitRatio((this.cache_Hit_Count/(double)this.cacheAccessCount));
 		cacheStatistics.setHitExpiryRatio((this.cache_Hit_Expiry_Count/(double)this.cacheAccessCount));
 		cacheStatistics.setMissRatio((this.cache_Miss_Count/(double)this.cacheAccessCount));
 		cacheStatistics.setAvgRecordReplenishmentTime(this.avg_HE_RRT+this.avg_M_RRT);
-		cacheStatistics.setAvgLRUOptimizationTime(0);
+		cacheStatistics.setAvgLRUOptimizationTime(this.avg_LOT);
 		return cacheStatistics;
 	}
 	

@@ -34,11 +34,11 @@ public class CacheTest_ProblemStatement_002 {
 	public void init() {
 		DataFetcher<UserData> dataFetcher = (String identifier) -> {
 			//for delay effect for miss
-//			try {
-//				Thread.currentThread().sleep(1000);
-//			} catch (InterruptedException ex) {
-//				Logger.println("interrupted Exception occurred.");
-//			}
+			try {
+				Thread.currentThread().sleep(1000);
+			} catch (InterruptedException ex) {
+				Logger.println("interrupted Exception occurred.");
+			}
 			int i = Integer.parseInt(identifier);
 			UserData userData = new UserData(i, "RANDOM_STRING_"+i);
 			if(!instanceCounter.containsKey(i)) {

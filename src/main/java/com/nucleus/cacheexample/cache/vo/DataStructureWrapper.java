@@ -156,6 +156,14 @@ public class DataStructureWrapper<T> {
 		return hashMap.size();
 	}
 	
+	public int getMemorySize(){
+		return list.size();
+	}
+	
+	public int getDiskSize(){
+		return hashMap.size()-list.size();
+	}
+	
 	public void sort(){
 		//add everything in memory
 		List<T> allRecords = new ArrayList<>();
