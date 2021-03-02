@@ -10,6 +10,7 @@ import com.nucleus.cacheexample.cache.vo.CacheMetadata;
 import com.nucleus.cacheexample.cache.vo.DataStructureWrapper;
 import com.nucleus.cacheexample.db.DataFetcher;
 import com.nucleus.cacheexample.utils.Logger;
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -18,9 +19,9 @@ import java.util.Date;
  * @author sandesh.singh
  * @param <T>
  */
-public class CacheServiceImpl<T> implements CacheService<T> {
+public class CacheServiceImpl<T extends Serializable> implements CacheService<T> {
 	
-	private DataStructureWrapper<CacheMetadata<T>> cacheWrapper;
+	private final DataStructureWrapper<CacheMetadata<T>> cacheWrapper;
 	private final int capacity;
 	private final int recordExpiryInseconds;
 	private final DataFetcher<T> dataFetcher;

@@ -11,6 +11,7 @@ import com.nucleus.cacheexample.cache.serivce.CacheService;
 import com.nucleus.cacheexample.cache.serivce.CacheServiceImpl;
 import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.utils.Logger;
+import java.io.Serializable;
 
 /**
  *
@@ -22,7 +23,7 @@ public class DAOService {
 	private DBService dBService = null;
 	private boolean enableCache;
 	
-	public <T> DAOService(Class<T> resultClass, BeanFactory beanFactory, boolean enableCache){
+	public <T extends Serializable> DAOService(Class<T> resultClass, BeanFactory beanFactory, boolean enableCache){
 		dBService = beanFactory.getDBService();
 		this.enableCache = enableCache;
 		if(enableCache){

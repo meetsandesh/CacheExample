@@ -5,12 +5,14 @@
  */
 package com.nucleus.cacheexample.db;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sandesh.singh
  * @param <T>
  */
-public interface DataFetcher<T> {
+public interface DataFetcher<T extends Serializable> {
 	
 	T getDataFromDB(int i);
 	

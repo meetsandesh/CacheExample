@@ -5,12 +5,14 @@
  */
 package com.nucleus.cacheexample.cache.serivce;
 
+import java.io.Serializable;
+
 /**
  *
  * @author sandesh.singh
  * @param <T>
  */
-public interface CacheService<T> {
+public interface CacheService<T extends Serializable> {
 	
 	T get(int key);
 	

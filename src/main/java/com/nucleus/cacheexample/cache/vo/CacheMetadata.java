@@ -5,6 +5,7 @@
  */
 package com.nucleus.cacheexample.cache.vo;
 
+import java.io.Serializable;
 import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CacheMetadata<T> {
+public class CacheMetadata<T extends Serializable> {
 	
 	private int id;
 	private T object;

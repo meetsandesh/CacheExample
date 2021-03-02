@@ -23,7 +23,7 @@ import org.junit.Test;
  *
  * @author sandesh.singh
  */
-public class CacheTest {
+public class CacheTest_ProblemStatement_001 {
 	
 	private CacheService<UserData> cache;
 	private Date date = new Date(1355270400000l);

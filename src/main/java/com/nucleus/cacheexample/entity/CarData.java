@@ -5,7 +5,6 @@
  */
 package com.nucleus.cacheexample.entity;
 
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,14 +16,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserData implements Serializable{
+public class CarData {
 	
 	private int id;
-	private String firstName;
-
-	public UserData(int i, String name) {
+	private String carNumber;
+	
+	public CarData(int i, String name) {
 		this.id = i;
-		this.firstName = name;
+		this.carNumber = name;
 	}
 	
 }
