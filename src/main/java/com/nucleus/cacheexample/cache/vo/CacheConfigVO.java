@@ -6,6 +6,7 @@
 package com.nucleus.cacheexample.cache.vo;
 
 import com.nucleus.cacheexample.db.DataFetcher;
+import com.nucleus.cacheexample.listners.RecordEvictionListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,9 +20,11 @@ import lombok.ToString;
 @ToString
 public class CacheConfigVO {
 
-	private int capacity;
-	private int recordExpiryInseconds;
+	private int capacity = 0;
+	private int recordExpiryInseconds = 0;
 	private DataFetcher dataFetcher;
-	private double loadRatio;
+	private double evictionRatio = 0;
+	private int memoryThresholdSize = 0;
+	private RecordEvictionListener recordEvictionListener = null;
 
 }

@@ -44,7 +44,7 @@ public class CacheTest_ProblemStatement_001 {
 		cacheConfigVO.setCapacity(3);
 		cacheConfigVO.setRecordExpiryInseconds(5);
 		cacheConfigVO.setDataFetcher(dataFetcher);		//value callback
-		cacheConfigVO.setLoadRatio(0.4);
+		cacheConfigVO.setEvictionRatio(0.3);
 		
 		this.cache = new CacheServiceImpl<UserData>(cacheConfigVO) {
 			@Override

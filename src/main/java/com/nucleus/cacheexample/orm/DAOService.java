@@ -31,7 +31,7 @@ public class DAOService {
 			cacheConfigVO.setCapacity(10);
 			cacheConfigVO.setRecordExpiryInseconds(10);
 			cacheConfigVO.setDataFetcher(dBService);
-			cacheConfigVO.setLoadRatio(0.5);
+			cacheConfigVO.setEvictionRatio(0.5);
 			cacheService = new CacheServiceImpl<T>(cacheConfigVO);
 		}
 	}

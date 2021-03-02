@@ -5,6 +5,7 @@
  */
 package com.nucleus.cacheexample.cache.vo;
 
+import com.nucleus.cacheexample.listners.RecordEvictionListener;
 import com.nucleus.cacheexample.utils.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,9 +27,12 @@ public class DataStructureWrapper<T> {
 	private Map<Integer, Integer>  hashMap = new HashMap<>();
 	//comparator
 	private final Comparator<T> comparator;
+	//listener
+	private RecordEvictionListener recordEvictionListener = null;
 	
-	public DataStructureWrapper(Comparator c){
+	public DataStructureWrapper(Comparator c, RecordEvictionListener<T> recordEvictionListener){
 		this.comparator = c;
+		this.recordEvictionListener = recordEvictionListener;
 	}
 	
 	public void add(T obj){
@@ -40,7 +44,7 @@ public class DataStructureWrapper<T> {
 		}
 	}
 	
-	public void delete(T obj){
+	public void delete(T obj, boolean callListener){
 		Logger.println("Deleting object: "+obj.hashCode());
 		Integer index = hashMap.get(obj.hashCode());
 		if(index != null){
@@ -52,6 +56,10 @@ public class DataStructureWrapper<T> {
 			}
 			list.remove(size-1);
 			hashMap.remove(obj.hashCode());
+			//call listener
+			if(callListener){
+				this.recordEvictionListener.evictFromCache(obj);
+			}
 		}
     }
 
@@ -92,7 +100,7 @@ public class DataStructureWrapper<T> {
 		List<Integer> deleted=new ArrayList<>();
 		for(int i=0;i<count;i++){
 			T temp = list.get(list.size()-1);
-			delete(temp);
+			delete(temp, true);
 			deleted.add(temp.hashCode());
 			printSize();
 		}

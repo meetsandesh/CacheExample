@@ -10,11 +10,14 @@ import com.nucleus.cacheexample.cache.serivce.CacheServiceImpl;
 import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.db.DataFetcher;
 import com.nucleus.cacheexample.entity.UserData;
+import com.nucleus.cacheexample.utils.Logger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -41,7 +44,7 @@ public class CacheTest_ProblemStatement_002 {
 		cacheConfigVO.setCapacity(3);
 		cacheConfigVO.setRecordExpiryInseconds(5);
 		cacheConfigVO.setDataFetcher(dataFetcher);		//value callback
-		cacheConfigVO.setLoadRatio(0.4);
+		cacheConfigVO.setEvictionRatio(0.3);
 		
 		this.cache = new CacheServiceImpl<UserData>(cacheConfigVO) {
 			@Override
@@ -65,7 +68,7 @@ public class CacheTest_ProblemStatement_002 {
 //		cacheConfigVO1.setCapacity(3);
 //		cacheConfigVO1.setRecordExpiryInseconds(5);
 //		cacheConfigVO1.setDataFetcher(dataFetcher1);		//value callback
-//		cacheConfigVO1.setLoadRatio(0.4);
+//		cacheConfigVO1.setEvictionRatio(0.3);
 //		
 //		this.cache = new CacheServiceImpl<CarData>(cacheConfigVO) {
 //			@Override
@@ -76,6 +79,68 @@ public class CacheTest_ProblemStatement_002 {
 		
 	}
 
-	
+	@Test
+	public void cacheTest_Expiry() {
+		Logger.debug("-------------------cacheTest_Expiry-------------------");
+		int id = 123;
+		Assert.assertNull(instanceCounter.get(id));		//initially no counter
+		
+		
+		//Repeated access at no advancement of timer
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
+		
+		date = new Date(1355270401000l);		//forwarding the clock to 1 sec
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//still counter = 1
+		
+		date = new Date(1355270405000l);		//forwarding the clock to 5 sec
+		cache.get(id);
+		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//still counter = 1
+		
+		date = new Date(1355270411000l);		//forwarding the clock to 11 sec
+		cache.get(id);
+		Assert.assertEquals(2, instanceCounter.get(id).intValue());	//counter = 2
+		
+		Logger.debug("------------------------------------------------------");
+	}
 
+	@Test
+	public void cacheTest_LRU() {
+		Logger.debug("---------------------cacheTest_LRU--------------------");
+		int id1 = 123;
+		int id2 = 456;
+		int id3 = 789;
+		
+		date = new Date(1355270401000l);		//forwarding the clock to 1 sec
+		cache.get(id1);
+		Assert.assertEquals(1, instanceCounter.get(id1).intValue());	//counter = 1
+		
+		date = new Date(1355270402000l);		//forwarding the clock to 2 sec
+		cache.get(id2);
+		cache.get(id2);
+		Assert.assertEquals(1, instanceCounter.get(id2).intValue());	//counter = 1
+		
+		date = new Date(1355270403000l);		//forwarding the clock to 3 sec
+		cache.get(id3);
+		cache.get(id3);
+		cache.get(id3);
+		Assert.assertEquals(1, instanceCounter.get(id3).intValue());	//counter = 1
+		
+		int id4 = 101112;
+		cache.get(id4);			//here the LRU logic should kick in and evict CAR1
+		Assert.assertEquals(1, instanceCounter.get(id4).intValue());	//counter = 1
+		
+		cache.get(id1);		//recreation of car 1 entry
+		Assert.assertEquals(2, instanceCounter.get(id1).intValue());	//counter = 2.. yay!!
+		
+		Logger.debug("------------------------------------------------------");
+	}
+	
 }

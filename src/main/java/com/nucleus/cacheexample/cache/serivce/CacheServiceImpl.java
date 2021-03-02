@@ -9,6 +9,7 @@ import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.cache.vo.CacheMetadata;
 import com.nucleus.cacheexample.cache.vo.DataStructureWrapper;
 import com.nucleus.cacheexample.db.DataFetcher;
+import com.nucleus.cacheexample.listners.RecordEvictionListener;
 import com.nucleus.cacheexample.utils.Logger;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -26,6 +27,8 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	private final int recordExpiryInseconds;
 	private final DataFetcher<T> dataFetcher;
 	private final double loadRatio;
+	private int memoryThresholdSize = 0;
+	private RecordEvictionListener recordEvictionListener = null;
 	private final Comparator<CacheMetadata<T>> comparator = (CacheMetadata<T> m1, CacheMetadata<T> m2) -> {
 //		int comparision = m1.getCount().compareTo(m2.getCount());
 		int comparision = m1.getDate().compareTo(m2.getDate());
@@ -42,8 +45,13 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 		this.capacity = cacheConfigVO.getCapacity();
 		this.recordExpiryInseconds = cacheConfigVO.getRecordExpiryInseconds();
 		this.dataFetcher = cacheConfigVO.getDataFetcher();
-		this.loadRatio = cacheConfigVO.getLoadRatio();	//always less than 1
-		this.cacheWrapper = new DataStructureWrapper<>(this.comparator);
+		this.loadRatio = cacheConfigVO.getEvictionRatio();	//always less than 1
+		this.memoryThresholdSize = cacheConfigVO.getMemoryThresholdSize();
+		this.recordEvictionListener = cacheConfigVO.getRecordEvictionListener();
+		if(this.recordEvictionListener==null){
+			this.recordEvictionListener = new RecordEvictionListener() {};
+		}
+		this.cacheWrapper = new DataStructureWrapper<>(this.comparator, this.recordEvictionListener);
 	}
 	
 	@Override
@@ -68,7 +76,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 				//within expiry
 				//update count only
 				Logger.debug("CACHE HIT");
-				cacheWrapper.delete(obj);
+				cacheWrapper.delete(obj, false);
 				cacheWrapper.printSize();
 				obj.setCount(obj.getCount()+1);
 				cacheWrapper.add(obj);
