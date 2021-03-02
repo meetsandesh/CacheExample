@@ -21,12 +21,12 @@ import lombok.ToString;
 @ToString
 public class CacheMetadata<T extends Serializable> {
 	
-	private int id;
+	private String id;
 	private T object;
 	private Date date;
 	private Long count;
 
-	public CacheMetadata(int i, T obj, Date d, Long c){
+	public CacheMetadata(String i, T obj, Date d, Long c){
 		this.id=i;
 		this.object=obj;
 		this.date=d;
@@ -35,7 +35,7 @@ public class CacheMetadata<T extends Serializable> {
 	
 	@Override
 	public int hashCode() {
-		return this.id;
+		return this.object.hashCode();
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class CacheMetadata<T extends Serializable> {
 			return false;
 		}
 		final CacheMetadata<?> other = (CacheMetadata<?>) obj;
-		if (this.id != other.id) {
+		if (!this.id.equals(other.id)) {
 			return false;
 		}
 		return true;

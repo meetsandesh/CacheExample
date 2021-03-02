@@ -25,5 +25,30 @@ public class CarData {
 		this.id = i;
 		this.carNumber = name;
 	}
+
+	@Override
+	public int hashCode() {
+		return this.id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final CarData other = (CarData) obj;
+		if (this.id != other.id) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 	
 }

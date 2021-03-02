@@ -63,8 +63,8 @@ public class DBService implements DataFetcher<UserData>{
 	}
 
 	@Override
-	public UserData getDataFromDB(int i) {
-		return fetchUserData(i);
+	public UserData getDataFromDB(String i) {
+		return fetchUserData(Integer.parseInt(i));
 	}
 	
 }

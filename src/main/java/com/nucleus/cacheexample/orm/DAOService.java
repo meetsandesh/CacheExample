@@ -40,7 +40,7 @@ public class DAOService {
 		Logger.println("DaoService__find: "+id);
 		if(this.enableCache){
 			Logger.println("Accessing Cache: ");
-			return resultClass.cast(cacheService.get(id));
+			return resultClass.cast(cacheService.get(""+id));
 		} else {
 			Logger.println("Accessing DB: ");
 			return (T)this.dBService.fetchUserData(id);

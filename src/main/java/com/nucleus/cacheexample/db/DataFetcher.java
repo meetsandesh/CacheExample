@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface DataFetcher<T extends Serializable> {
 	
-	T getDataFromDB(int i);
+	T getDataFromDB(String i);
 	
 }

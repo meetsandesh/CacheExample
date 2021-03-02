@@ -67,7 +67,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	}
 	
 	@Override
-	public T get(int key){
+	public T get(String key){
 		this.cacheAccessCount++;
 		CacheMetadata<T> obj = cacheWrapper.searchAndFetch(key);
 		//check if object is in cache
@@ -114,7 +114,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 		}
 	}
 	
-	private T updateInCache(int key, long count){
+	private T updateInCache(String key, long count){
 		//fetch from dataFetcher
 		Logger.println("Fetching from DB");
 		T temp = dataFetcher.getDataFromDB(key);

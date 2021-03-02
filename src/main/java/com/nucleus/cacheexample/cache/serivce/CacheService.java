@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 public interface CacheService<T extends Serializable> {
 	
-	T get(int key);
+	T get(String key);
 	
 	CacheStatistics getStatistics();
 	

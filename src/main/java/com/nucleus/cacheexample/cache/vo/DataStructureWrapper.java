@@ -24,7 +24,7 @@ public class DataStructureWrapper<T> {
 	//actual records
 	private List<T> list = new ArrayList<>();
 	//key is id, and value is position of object in list
-	private Map<Integer, Integer>  hashMap = new HashMap<>();
+	private Map<String, String>  hashMap = new HashMap<>();
 	//comparator
 	private final Comparator<T> comparator;
 	//listener
@@ -37,25 +37,26 @@ public class DataStructureWrapper<T> {
 	
 	public void add(T obj){
 		Logger.println("Adding object: "+obj.hashCode());
-		if(hashMap.get(obj.hashCode()) == null){
+		if(hashMap.get(""+obj.hashCode()) == null){
 			int size = list.size();
 			list.add(obj);
-			hashMap.put(obj.hashCode(), size);
+			hashMap.put(""+obj.hashCode(), ""+size);
 		}
 	}
 	
 	public void delete(T obj, boolean callListener){
 		Logger.println("Deleting object: "+obj.hashCode());
-		Integer index = hashMap.get(obj.hashCode());
-		if(index != null){
+		String indexMetadata = hashMap.get(""+obj.hashCode());
+		if(indexMetadata != null){
+			int index = Integer.parseInt(indexMetadata);
 			int size = list.size();
 			if(size>1){
 				T lastItem = list.get(size-1);
 				Collections.swap(list, index, size-1);
-				hashMap.put(lastItem.hashCode(), index);
+				hashMap.put(""+lastItem.hashCode(), ""+index);
 			}
 			list.remove(size-1);
-			hashMap.remove(obj.hashCode());
+			hashMap.remove(""+obj.hashCode());
 			//call listener
 			if(callListener){
 				this.recordEvictionListener.evictFromCache(obj);
@@ -63,10 +64,11 @@ public class DataStructureWrapper<T> {
 		}
     }
 
-	public T searchAndFetch(int id){
+	public T searchAndFetch(String id){
 		Logger.println("Searching for id: "+id);
-		Integer index = hashMap.get(id);
-		if(index!=null){
+		String indexMetadata = hashMap.get(id);
+		if(indexMetadata!=null){
+			int index = Integer.parseInt(indexMetadata);
 			Logger.println("Found id: "+id+" at index: "+index+", list size: "+list.size()+" map size: "+hashMap.size()+" within limit: "+(index<list.size()));
 			return list.get(index);
 		} else {
@@ -88,7 +90,7 @@ public class DataStructureWrapper<T> {
 		hashMap=new HashMap<>();
 		for(int i=0;i<list.size();i++){
 			T temp=list.get(i);
-			hashMap.put(temp.hashCode(), i);
+			hashMap.put(""+temp.hashCode(), ""+i);
 		}
 		Logger.println("FINAL:");
 		printWrapperMetadata();
@@ -97,15 +99,15 @@ public class DataStructureWrapper<T> {
 	public void deleteFromLast(int count) {
 		Logger.println("Deleting items from last: "+count);
 		printSize();
-		List<Integer> deleted=new ArrayList<>();
+		List<String> deleted=new ArrayList<>();
 		for(int i=0;i<count;i++){
 			T temp = list.get(list.size()-1);
 			delete(temp, true);
-			deleted.add(temp.hashCode());
+			deleted.add(""+temp.hashCode());
 			printSize();
 		}
 		//delete from hashMap, idk why its happening
-		for(Integer i:deleted){
+		for(String i:deleted){
 			hashMap.remove(i);
 			printSize();
 		}
@@ -118,12 +120,14 @@ public class DataStructureWrapper<T> {
 			Logger.println("P_"+i+" :: ID_"+list.get(i).hashCode());
 		}
 		Logger.println("HashMap:");
-		for(Map.Entry<Integer, Integer> e:hashMap.entrySet()){
+		for(Map.Entry<String, String> e:hashMap.entrySet()){
 			Logger.println("ID_ "+e.getKey()+" -> P_"+e.getValue());
 		}
 		Logger.println("Mix Up:");
-		for(Map.Entry<Integer, Integer> e:hashMap.entrySet()){
-			Logger.println("HM_ "+e.getKey()+" -> P_"+e.getValue()+" -> L_"+list.get(e.getValue()).hashCode());
+		for(Map.Entry<String, String> e:hashMap.entrySet()){
+			String indexMetadata = e.getValue();
+			int index = Integer.parseInt(indexMetadata);
+			Logger.println("HM_ "+e.getKey()+" -> P_"+e.getValue()+" -> L_"+list.get(index).hashCode());
 		}
 		Logger.println("_________________________________________________");
 	}
