@@ -39,7 +39,7 @@ public class CacheService<T> {
 		}
 	};
 	
-	public CacheService(Class<T> resultClass, CacheConfigVO cacheConfigVO){
+	public CacheService(CacheConfigVO cacheConfigVO){
 		this.capacity = cacheConfigVO.getCapacity();
 		this.recordExpiryInseconds = cacheConfigVO.getRecordExpiryInseconds();
 		this.dataFetcher = cacheConfigVO.getDataFetcher();
