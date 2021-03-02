@@ -7,6 +7,7 @@ package com.nucleus.cacheexample.cache.serivce;
 
 import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.cache.vo.CacheMetadata;
+import com.nucleus.cacheexample.cache.vo.CacheStatistics;
 import com.nucleus.cacheexample.cache.vo.DataStructureWrapper;
 import com.nucleus.cacheexample.db.DataFetcher;
 import com.nucleus.cacheexample.listners.RecordEvictionListener;
@@ -29,6 +30,12 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	private final double loadRatio;
 	private int memoryThresholdSize = 0;
 	private RecordEvictionListener recordEvictionListener = null;
+	private int cacheAccessCount = 0;
+	private int cache_Hit_Count = 0;
+	private int cache_Hit_Expiry_Count = 0;
+	private double avg_HE_RRT = 0;
+	private int cache_Miss_Count = 0;
+	private double avg_M_RRT = 0;
 	private final Comparator<CacheMetadata<T>> comparator = (CacheMetadata<T> m1, CacheMetadata<T> m2) -> {
 //		int comparision = m1.getCount().compareTo(m2.getCount());
 		int comparision = m1.getDate().compareTo(m2.getDate());
@@ -56,12 +63,20 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	
 	@Override
 	public T get(int key){
+		this.cacheAccessCount++;
 		CacheMetadata<T> obj = cacheWrapper.searchAndFetch(key);
 		//check if object is in cache
 		if(obj==null){
 			//not in cache
 			Logger.debug("Cache MISS");
-			return updateInCache(key, 1L);
+			Date initRRT = new Date();
+			T object = updateInCache(key, 1L);
+			Date finalRRT = new Date();
+			long duration = (finalRRT.getTime()-initRRT.getTime());
+			this.avg_M_RRT = (this.avg_M_RRT*this.cache_Miss_Count) + duration;
+			this.cache_Miss_Count++;
+			this.avg_M_RRT = this.avg_M_RRT/(double)this.cache_Miss_Count;
+			return object;
 		} else {
 			//exists in cache
 			//compare time
@@ -71,7 +86,14 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 			if(seconds > (long)this.recordExpiryInseconds){
 				//expiry time elapsed
 				Logger.debug("CACHE HIT_EXPIRY");
-				return updateInCache(key, obj.getCount()+1);
+				Date initRRT = new Date();
+				T object = updateInCache(key, obj.getCount()+1);
+				Date finalRRT = new Date();
+				long duration = (finalRRT.getTime()-initRRT.getTime());
+				this.avg_HE_RRT = (this.avg_HE_RRT*this.cache_Hit_Expiry_Count) + duration;
+				this.cache_Hit_Expiry_Count++;
+				this.avg_HE_RRT = this.avg_HE_RRT/(double)this.cache_Miss_Count;
+				return object;
 			} else {
 				//within expiry
 				//update count only
@@ -81,6 +103,7 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 				obj.setCount(obj.getCount()+1);
 				cacheWrapper.add(obj);
 				cacheWrapper.printSize();
+				this.cache_Hit_Count++;
 				return obj.getObject();
 			}
 		}
@@ -110,6 +133,22 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 	
 	protected Date getCurrentDate(){
 		return new Date();
+	}
+
+	@Override
+	public CacheStatistics getStatistics() {
+		CacheStatistics cacheStatistics = new CacheStatistics();
+		cacheStatistics.setCacheCapacity(this.capacity);
+		cacheStatistics.setCacheSize(cacheWrapper.getSize());
+		cacheStatistics.setMemorySize(cacheWrapper.getSize());
+		cacheStatistics.setDiskSize(0);
+		cacheStatistics.setAccessCount(this.cacheAccessCount);
+		cacheStatistics.setHitRatio((this.cache_Hit_Count/(double)this.cacheAccessCount));
+		cacheStatistics.setHitExpiryRatio((this.cache_Hit_Expiry_Count/(double)this.cacheAccessCount));
+		cacheStatistics.setMissRatio((this.cache_Miss_Count/(double)this.cacheAccessCount));
+		cacheStatistics.setAvgRecordReplenishmentTime(this.avg_HE_RRT+this.avg_M_RRT);
+		cacheStatistics.setAvgLRUOptimizationTime(0);
+		return cacheStatistics;
 	}
 	
 }

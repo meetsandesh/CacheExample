@@ -32,6 +32,12 @@ public class CacheTest_ProblemStatement_002 {
 	@Before
 	public void init() {
 		DataFetcher<UserData> dataFetcher = (int i) -> {
+			//for delay effect for miss
+			try {
+				Thread.currentThread().sleep(1000);
+			} catch (InterruptedException ex) {
+				Logger.println("interrupted Exception occurred.");
+			}
 			UserData userData = new UserData(i, "RANDOM_STRING_"+i);
 			if(!instanceCounter.containsKey(i)) {
 				instanceCounter.put(i, new AtomicInteger(0));
@@ -88,24 +94,31 @@ public class CacheTest_ProblemStatement_002 {
 		
 		//Repeated access at no advancement of timer
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//counter = 1
 		
 		date = new Date(1355270401000l);		//forwarding the clock to 1 sec
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//still counter = 1
 		
 		date = new Date(1355270405000l);		//forwarding the clock to 5 sec
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id).intValue());	//still counter = 1
 		
 		date = new Date(1355270411000l);		//forwarding the clock to 11 sec
 		cache.get(id);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(2, instanceCounter.get(id).intValue());	//counter = 2
 		
 		Logger.debug("------------------------------------------------------");
@@ -120,24 +133,32 @@ public class CacheTest_ProblemStatement_002 {
 		
 		date = new Date(1355270401000l);		//forwarding the clock to 1 sec
 		cache.get(id1);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id1).intValue());	//counter = 1
 		
 		date = new Date(1355270402000l);		//forwarding the clock to 2 sec
 		cache.get(id2);
+		Logger.debug(cache.getStatistics().toString());
 		cache.get(id2);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id2).intValue());	//counter = 1
 		
 		date = new Date(1355270403000l);		//forwarding the clock to 3 sec
 		cache.get(id3);
+		Logger.debug(cache.getStatistics().toString());
 		cache.get(id3);
+		Logger.debug(cache.getStatistics().toString());
 		cache.get(id3);
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id3).intValue());	//counter = 1
 		
 		int id4 = 101112;
-		cache.get(id4);			//here the LRU logic should kick in and evict CAR1
+		cache.get(id4);			//here the LRU logic should kick in and evict 123
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(1, instanceCounter.get(id4).intValue());	//counter = 1
 		
-		cache.get(id1);		//recreation of car 1 entry
+		cache.get(id1);		//recreation of 123 entry
+		Logger.debug(cache.getStatistics().toString());
 		Assert.assertEquals(2, instanceCounter.get(id1).intValue());	//counter = 2.. yay!!
 		
 		Logger.debug("------------------------------------------------------");

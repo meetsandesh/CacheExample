@@ -132,7 +132,7 @@ public class DataStructureWrapper<T> {
 		if(list.size() == hashMap.size()){
 			Logger.println("Cache Size: L_"+list.size()+" HM_"+hashMap.size()+" L_HM");
 		} else {
-			Logger.println("Cache Size: L_"+list.size()+" HM_"+hashMap.size()+" L_N_HM");
+			Logger.println("Cache Size: L_"+list.size()+" HM_"+hashMap.size()+" L_NE_HM");
 		}
 	}
 	

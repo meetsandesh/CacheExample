@@ -5,6 +5,7 @@
  */
 package com.nucleus.cacheexample.cache.serivce;
 
+import com.nucleus.cacheexample.cache.vo.CacheStatistics;
 import java.io.Serializable;
 
 /**
@@ -15,5 +16,7 @@ import java.io.Serializable;
 public interface CacheService<T extends Serializable> {
 	
 	T get(int key);
+	
+	CacheStatistics getStatistics();
 	
 }
