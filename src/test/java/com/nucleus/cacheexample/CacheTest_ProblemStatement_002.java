@@ -10,6 +10,7 @@ import com.nucleus.cacheexample.cache.serivce.CacheServiceImpl;
 import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
 import com.nucleus.cacheexample.db.DataFetcher;
 import com.nucleus.cacheexample.entity.UserData;
+import com.nucleus.cacheexample.listners.RecordEvictionListener;
 import com.nucleus.cacheexample.utils.Logger;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,6 +52,13 @@ public class CacheTest_ProblemStatement_002 {
 		cacheConfigVO.setRecordExpiryInseconds(5);
 		cacheConfigVO.setDataFetcher(dataFetcher);		//value callback
 		cacheConfigVO.setEvictionRatio(0.3);
+		cacheConfigVO.setMemoryThresholdSize(3);
+		cacheConfigVO.setRecordEvictionListener(new RecordEvictionListener() {
+			@Override
+			public void evictFromCache(Object cacheMetadata) {
+				Logger.debug("External method: Record evicted: "+cacheMetadata.toString());
+			}
+		});
 		
 		this.cache = new CacheServiceImpl<UserData>(cacheConfigVO) {
 			@Override

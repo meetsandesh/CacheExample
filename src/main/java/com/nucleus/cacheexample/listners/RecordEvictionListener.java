@@ -5,17 +5,14 @@
  */
 package com.nucleus.cacheexample.listners;
 
-import com.nucleus.cacheexample.utils.Logger;
-
 /**
  *
  * @author sandesh.singh
  * @param <T>
  */
+@FunctionalInterface
 public interface RecordEvictionListener<T>{
 	
-	default void evictFromCache(T cacheMetadata){
-		Logger.debug("Record evicted: "+cacheMetadata.toString());
-	}
+	void evictFromCache(T cacheMetadata);
 	
 }

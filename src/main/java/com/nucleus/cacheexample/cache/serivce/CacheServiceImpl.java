@@ -56,7 +56,12 @@ public class CacheServiceImpl<T extends Serializable> implements CacheService<T>
 		this.memoryThresholdSize = cacheConfigVO.getMemoryThresholdSize();
 		this.recordEvictionListener = cacheConfigVO.getRecordEvictionListener();
 		if(this.recordEvictionListener==null){
-			this.recordEvictionListener = new RecordEvictionListener() {};
+			this.recordEvictionListener = new RecordEvictionListener() {
+				@Override
+				public void evictFromCache(Object cacheMetadata) {
+					Logger.debug("Default method: Record evicted: "+cacheMetadata.toString());
+				}
+			};
 		}
 		this.cacheWrapper = new DataStructureWrapper<>(this.comparator, this.recordEvictionListener);
 	}
