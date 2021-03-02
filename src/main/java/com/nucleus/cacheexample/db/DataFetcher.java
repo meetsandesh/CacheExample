@@ -8,6 +8,7 @@ package com.nucleus.cacheexample.db;
 /**
  *
  * @author sandesh.singh
+ * @param <T>
  */
 public interface DataFetcher<T> {
 	

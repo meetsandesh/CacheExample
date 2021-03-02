@@ -44,12 +44,14 @@ public class DataStructureWrapper<T> {
 		Logger.println("Deleting object: "+obj.hashCode());
 		Integer index = hashMap.get(obj.hashCode());
 		if(index != null){
-			hashMap.remove(obj.hashCode());
 			int size = list.size();
-			T lastItem = list.get(size-1);
-			Collections.swap(list, index, size-1);
+			if(size>1){
+				T lastItem = list.get(size-1);
+				Collections.swap(list, index, size-1);
+				hashMap.put(lastItem.hashCode(), index);
+			}
 			list.remove(size-1);
-			hashMap.put(lastItem.hashCode(), index);
+			hashMap.remove(obj.hashCode());
 		}
     }
 

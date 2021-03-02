@@ -8,8 +8,8 @@ package com.nucleus.cacheexample.orm;
 import com.nucleus.cacheexample.db.DBService;
 import com.nucleus.cacheexample.entity.service.BeanFactory;
 import com.nucleus.cacheexample.cache.serivce.CacheService;
+import com.nucleus.cacheexample.cache.serivce.CacheServiceImpl;
 import com.nucleus.cacheexample.cache.vo.CacheConfigVO;
-import com.nucleus.cacheexample.entity.UserData;
 import com.nucleus.cacheexample.utils.Logger;
 
 /**
@@ -31,7 +31,7 @@ public class DAOService {
 			cacheConfigVO.setRecordExpiryInseconds(10);
 			cacheConfigVO.setDataFetcher(dBService);
 			cacheConfigVO.setLoadRatio(0.5);
-			cacheService = new CacheService<T>(cacheConfigVO);
+			cacheService = new CacheServiceImpl<T>(cacheConfigVO);
 		}
 	}
 
